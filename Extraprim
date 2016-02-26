@@ -1,0 +1,203 @@
+/*Un număr n se numeşte extraprim dacă atât el, cât şi orice număr obţinut prin permutarea
+cifrelor lui n, sunt numere prime. De exemplu, numărul 113 este un număr extraprim
+deoarece 113, 311, 131 sunt numere prime.
+a) Scrieţi definiţia completă a unui subprogram f, cu un parametru, subprogram care:
+- primeşte prin intermediul parametrului a un număr natural cu cel mult 3 cifre (a>1)
+- returnează suma tuturor exponenţilor din descompunerea în factori primi a valorii
+parametrului a.
+Exemplu: pentru a=90 subprogramul va returna valoarea 4, deoarece a=2*32
+*5 şi
+1+2+1=4. (4p.)
+b) Scrieţi un program C/C++ care citeşte de la tastatură un număr natural n, 2≤n≤999 şi,
+folosind apeluri ut verifică dacă n este un ile ale subprogramului f,număr extraprim. În caz
+afirmativ, programul afişează pe ecran mesajul DA, în caz contrar afişând mesajul NU. */
+
+#include <iostream>
+
+#define SIZE 20
+
+
+int f(int a);
+void BacktrackStack(int nPosition, int nNumberOfElements);
+bool ValidateStack(int nPosition);
+bool IsStackSolution(int nPosition);
+
+
+
+using namespace std;
+
+int contor = 1;
+
+int v[SIZE], aparitii_v[SIZE];
+
+int cifre[SIZE], nStack[SIZE];
+
+int NR;
+
+
+int main()
+{
+	int n;
+
+
+	cout << "n =";
+	cin >> n;
+
+	f(n);
+
+	NR = NumberOfElements(n);
+
+	int extraprim = 1;
+
+	BacktrackStack(1, NR);
+
+
+	if (extraprim == 1)
+	{
+		cout << "DA";
+	}
+
+	else
+	{
+		cout << "NU";
+	}
+
+	system("PAUSE");
+}
+
+int f(int a)
+{
+	int nSum = 0;
+
+	for (int i = 2; i <= a; i++)
+	{
+		int prim = 1;
+
+		for (int j = 2; j <= i / 2; j++)
+		{
+			if (i % j == 0)
+			{
+				prim = 0;
+				break;
+			}
+		}                       //DACA AM GASIT DIVIZOR PRIM
+
+
+		if (prim == 1 && a % i == 0)
+		{
+			a = a / i;                //IMPART a LA i DACA REZULTATUL E NUMAR EXACT. DIVIDEREA PROPRIE A LUI a IN FACTORII PRIMI i
+
+
+			if (contor == 1)
+			{
+				v[contor] = i;
+				aparitii_v[contor] ++;
+				contor++;
+
+			}
+
+			else
+			{
+				if (v[contor - 1] != i)
+				{
+					v[contor] = i;
+					aparitii_v[contor] ++;
+					contor++;
+				}
+				else
+				{
+					aparitii_v[contor - 1]++;
+				}
+			}
+
+
+
+
+
+		}
+
+
+		if (a % i == 0)
+		{
+			i--;
+		}
+
+	} // AM TERMINAT DE FORMAT VECTORUL DE FACTORI PRIMI SI VECTORUL DE FRECVENTA
+
+	for (int i = 1; i <= contor; i++)
+	{
+		nSum += aparitii_v[i];
+	}
+
+
+	return nSum;
+}
+
+void BacktrackStack(int nPosition, int nNumberOfElements)
+{
+	for (int i = 1; i <= nNumberOfElements; i++)
+	{
+		nStack[nPosition] = cifre[i];
+
+		if (ValidateStack(nPosition))
+		{
+			if (IsStackSolution(nPosition))
+				if (Prim(nPosition))
+				{
+
+				}
+			else
+				BacktrackStack(nPosition + 1, nNumberOfElements);
+		}
+	}
+}
+
+bool ValidateStack(int nPosition)
+{
+	bool bReturn = 1;
+
+	for (int i = 1; i <= nPosition - 1; i++)
+	{
+		if (nStack[i] == nStack[nPosition])
+		{
+			bReturn = 0;
+			break;
+		}
+	}
+
+	return bReturn;
+}
+
+bool IsStackSolution(int nPosition)
+{
+	if (nPosition == NR)
+		return 1;
+	else
+		return 0;
+}
+
+void PrintStack(int nPosition)
+{
+	for (int i = 1; i <= nPosition; i++)
+	{
+		cout << nStack[i] << " ";
+	}
+
+	cout << std::endl;
+}
+
+int NumberOfElements(int nAux)
+{
+	int nAux1 = 1;
+
+	while (nAux != 0)
+	{
+		cifre[nAux1] = (nAux / 10);
+		nAux = nAux / 10;
+		nAux1++;
+	}
+
+	nAux--;
+
+	return nAux1;
+}
